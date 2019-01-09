@@ -40,7 +40,7 @@ public class Main {
                 "</body>\n"
                 +"</html>";
         return ("HTTP/1.1 200 OK\r\n"+
-                "Date: "+getServerTime()+
+                "Date: "+getServerTime()+"\r\n"+
                 "Content-Type: text/html; charset=UTF-8\r\n"+
                 "Content-Length: "+HtmlContent.length()+"\r\n\r\n"+
                 HtmlContent).getBytes();
