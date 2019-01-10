@@ -12,6 +12,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.TimeZone;
+import httpUtil.*;
 
 public class Main {
     private static ServerSocket server;
@@ -45,9 +46,7 @@ public class Main {
                 String message = in.next();
                 socket.getOutputStream().write(Response(message));
             }
-           
-            socket.getOutputStream().write(Response("message"));
-            
+
             inStream.close();
             socket.close();
         }
