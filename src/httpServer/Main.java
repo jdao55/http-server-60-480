@@ -1,4 +1,5 @@
 package httpServer;
+
 import javax.imageio.IIOException;
 import javax.xml.crypto.dsig.spec.HMACParameterSpec;
 import java.io.*;
@@ -6,29 +7,51 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Scanner;
 import java.util.TimeZone;
 
 public class Main {
     private static ServerSocket server;
     private static int port= 8081;
 
-    public static void main(String[] args) throws IOException, ClassNotFoundException {
+    public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
 
         server = new ServerSocket(port);
+        Scanner in = new Scanner(System.in);
 
         while(true){
             Socket socket =  server.accept();
+
             BufferedReader inStream = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            //TODO parse and handle http requests
-
-            socket.getOutputStream().write(Response("hello world!"));
-
+                
+            String input,info;
+            Map<String,String> header = new HashMap<String,String>();
+            
+            info = inStream.readLine();
+            input = inStream.readLine();
+            while(input.length()>0) {         
+            	String[] tokens = input.split(":",2);                               		
+                header.put(tokens[0], tokens[1]);
+                input = inStream.readLine();
+            }
+                  
+            HTTPRequest request = new HTTPRequest(info,header);
+                                 
+            if (request.getMethod().equals("GET") && request.getURL().equals("/")) {
+            	System.out.println("Enter message: ");
+                String message = in.next();
+                socket.getOutputStream().write(Response(message));
+            }
+           
+            socket.getOutputStream().write(Response("message"));
+            
             inStream.close();
             socket.close();
-
         }
-
+   
 
 
     }
