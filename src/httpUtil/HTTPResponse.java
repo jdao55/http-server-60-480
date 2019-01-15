@@ -7,30 +7,31 @@ import java.util.Map;
 import java.util.Locale;
 import java.util.TimeZone;
 
-public class HttpsResponse {
+public class HTTPResponse {
     private int httpVersionMajor;
     private int httpVersionMinor;
     private int statusCode;
     private String body;
-    private HashMap<String, String> HeaderMap;
+    private HashMap<String, String> headerMap;
 
-    public HttpsResponse(String _body, int _statusCode) {
+    public HTTPResponse(String _body, int _statusCode) {
         body = _body;
         httpVersionMajor = 1;
         httpVersionMinor = 1;
-        HeaderMap.put("Content-Length", Integer.toString(body.length()));
-        HeaderMap.put("Date", getServerTime());
+        headerMap = new HashMap<String, String>();
+        headerMap.put("Content-Length", Integer.toString(body.length()));
+        headerMap.put("Date", getServerTime());
         statusCode = _statusCode;
 
     }
 
     public void addHeader(String key, String value) {
-        HeaderMap.put(key, value);
+        headerMap.put(key, value);
     }
 
     public byte[] getHeaderBytes() {
-        String resp = String.format("HTTP/%d.%d %s\r\n", httpVersionMajor, httpVersionMinor, statusCode, getStatusString(statusCode));
-        for (Map.Entry<String, String> entry : HeaderMap.entrySet()) {
+        String resp = String.format("HTTP/%d.%d %d %s\r\n", httpVersionMajor, httpVersionMinor, statusCode, getStatusString(statusCode));
+        for (Map.Entry<String, String> entry : headerMap.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
             resp += key + ": " + value + "\r\n";
@@ -40,7 +41,7 @@ public class HttpsResponse {
     }
 
     public String getHeader(String key) {
-        return HeaderMap.get(key);
+        return headerMap.get(key);
     }
 
     public String getBody() {
