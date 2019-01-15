@@ -16,8 +16,8 @@ public class HttpsResponse {
 
   public HttpsResponse(String _body, int _statusCode){
     body=_body;
-    HeaderMap.put("Content-Length", _body.Length());
-    HeaderMap.put("Date", getServerTime())
+    HeaderMap.put("Content-Length", Integer.toString(body.length()));
+    HeaderMap.put("Date", getServerTime());
         statusCode = _statusCode;
 
   }
@@ -29,8 +29,8 @@ public class HttpsResponse {
 
   public byte[] getHeaderBytes()
   {
-    String resp = String.Format("HTTP/%d.%d %s\r\n", 1,1 statusCode, getStatusString(statusCode));
-    for (Map.Entry<String, String> entry : map.entrySet()) {
+    String resp = String.format("HTTP/%d.%d %s\r\n", 1,1, statusCode, getStatusString(statusCode));
+    for (Map.Entry<String, String> entry : HeaderMap.entrySet()) {
       String key = entry.getKey();
       String value = entry.getValue();
       resp+=key+": "+value+"\r\n";

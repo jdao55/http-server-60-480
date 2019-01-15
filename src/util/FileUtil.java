@@ -2,6 +2,12 @@ package Util;
 //TODO add imports
 //import;
 
+import javax.imageio.IIOException;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 class FileUtil{
 
 static String readFile(String path, Charset encoding)
@@ -11,7 +17,7 @@ static String readFile(String path, Charset encoding)
   return new String(encoded, encoding);
 }
 
-  static byte[] readFileBytes(String path)
+  static byte[] readFileBytes(String path) throws IOException
   {
     return Files.readAllBytes(Paths.get(path));
   }
