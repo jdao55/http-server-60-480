@@ -1,25 +1,30 @@
 package util;
-//TODO add imports
-//import;
 
-import javax.imageio.IIOException;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
-class FileUtil {
+public class FileUtil {
     //edit rootPath to change root path of site
-    static String rootPath="";
+    public static String rootPath="";
 
-    static String readFile(String path, Charset encoding)
-            throws IOException {
-        byte[] encoded = Files.readAllBytes(Paths.get(rootPath+path));
+    public static String readFile(String path, Charset encoding) throws IOException, FileNotFoundException {
+        Path p = Paths.get(rootPath, path);
+        if(!p.toFile().exists())
+            throw new FileNotFoundException();
+
+        byte[] encoded = Files.readAllBytes(p);
         return new String(encoded, encoding);
     }
 
-    static byte[] readFileBytes(String path) throws IOException {
-        return Files.readAllBytes(Paths.get(rootPath, path));
+    public static byte[] readFileBytes(String path) throws IOException, FileNotFoundException {
+        Path p = Paths.get(rootPath, path);
+        if(!p.toFile().exists())
+            throw new FileNotFoundException();
+        return Files.readAllBytes(p);
     }
 
 }

@@ -1,27 +1,26 @@
 package httpServer;
 
-import javax.imageio.IIOException;
-import javax.xml.crypto.dsig.spec.HMACParameterSpec;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.nio.charset.Charset;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.TimeZone;
 import httpUtil.*;
+import util.*;
 
 public class Main {
     private static ServerSocket server;
     private static int port= 8081;
 
+    //TODO add site rootPath, and port number as commandline args
     public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
 
         server = new ServerSocket(port);
         Scanner in = new Scanner(System.in);
+        FileUtil.rootPath=System.getProperty("user.dir");
 
         while(true){
             Socket socket =  server.accept();
@@ -30,7 +29,8 @@ public class Main {
                 
             String input,info;
             Map<String,String> header = new HashMap<String,String>();
-            
+
+            //read Request
             info = inStream.readLine();
             input = inStream.readLine();
             while(input.length()>0) {         
@@ -40,12 +40,9 @@ public class Main {
             }
                   
             HTTPRequest request = new HTTPRequest(info,header);
-                                 
-            if (request.getMethod().equals("GET") && request.getURL().equals("/")) {
-            	System.out.println("Enter message: ");
-                String message = in.next();
-                socket.getOutputStream().write(Response(message));
-            }
+
+            //process request
+            handleRequest(request, socket);
 
             inStream.close();
             socket.close();
@@ -54,26 +51,33 @@ public class Main {
 
 
     }
-    public static byte[] Response(String text){
-        String HtmlContent="<!DOCTYPE html>\n" +
-                "<html>\n" +
-                "<body>\n" +
-                "<p>"+text+"</p>\n"+
-                "</body>\n"
-                +"</html>";
-        return ("HTTP/1.1 200 OK\r\n"+
-                "Date: "+getServerTime()+"\r\n"+
-                "Content-Type: text/html; charset=UTF-8\r\n"+
-                "Content-Length: "+HtmlContent.length()+"\r\n\r\n"+
-                HtmlContent).getBytes();
 
+    //handle incomming requests
+    private static void handleRequest(HTTPRequest req, Socket soc) {
+        try {
+            switch (req.getMethod()) {
+                case "GET":
+                    handleGet(req, soc);
+                    break;
+            }
+        }
+        catch (IOException e)
+        {}
     }
 
-    public static String getServerTime() {
-        Calendar calendar = Calendar.getInstance();
-        SimpleDateFormat dateFormat = new SimpleDateFormat(
-                "EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
-        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-        return dateFormat.format(calendar.getTime());
+    //handle get request
+    private static void handleGet(HTTPRequest req, Socket soc) throws IOException
+    {
+        try {
+            String body = FileUtil.readFile(req.getURL(), Charset.forName("UTF-8"));
+            HTTPResponse resp = new HTTPResponse(body, 200);
+            soc.getOutputStream().write(resp.getHeaderBytes());
+        }
+        catch (FileNotFoundException e)
+        {
+            HTTPResponse resp = new HTTPResponse("<h>404 Not Found</h>", 404);
+            soc.getOutputStream().write(resp.getHeaderBytes());
+        }
+
     }
 }

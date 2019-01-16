@@ -25,6 +25,7 @@ public class HTTPResponse {
 
     }
 
+
     public void addHeader(String key, String value) {
         headerMap.put(key, value);
     }
@@ -52,14 +53,19 @@ public class HTTPResponse {
         body = _b;
     }
 
-
     private String getStatusString(int status) {
 
         //TODO return correct strings
-        return "OK";
+        switch (status) {
+            case 200:
+                return "OK";
+            case 404:
+                return "NOT FOUND";
+        }
+        return "";
     }
 
-
+    //get current date in html format
     private String getServerTime() {
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat dateFormat = new SimpleDateFormat(
