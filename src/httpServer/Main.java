@@ -35,7 +35,9 @@ public class Main {
                 //read Request
                 info = inStream.readLine();
                 input = inStream.readLine();
+                System.out.println(info);
                 while (input.length() > 0) {
+
                     String[] tokens = input.split(":", 2);
                     header.put(tokens[0], tokens[1]);
                     input = inStream.readLine();
@@ -76,7 +78,11 @@ public class Main {
     private static void handleGet(HTTPRequest req, Socket soc) throws IOException
     {
         try {
-            byte [] body = FileUtil.readFileBytes(req.getURL());
+            //redirect '/' to '/index.html'
+            String url;
+            if ((url=req.getURL()).equals("/"))
+                url="/index.html";
+            byte [] body = FileUtil.readFileBytes(url);
             HTTPResponse resp = new HTTPResponse(body, 200);
             soc.getOutputStream().write(resp.getReponseBytes());
         }
