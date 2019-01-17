@@ -29,8 +29,12 @@ public class HTTPResponse {
     public void addHeader(String key, String value) {
         headerMap.put(key, value);
     }
+    public String getHeader(String key) {
+        return headerMap.get(key);
+    }
 
-    public byte[] getHeaderBytes() {
+    public byte[] getReponseBytes() {
+        //create header
         String respHeader = String.format("HTTP/%d.%d %d %s\r\n", httpVersionMajor, httpVersionMinor, statusCode, getStatusString(statusCode));
         for (Map.Entry<String, String> entry : headerMap.entrySet()) {
             String key = entry.getKey();
@@ -47,18 +51,25 @@ public class HTTPResponse {
         return resp;
     }
 
-    public String getHeader(String key) {
-        return headerMap.get(key);
-    }
+
 
     public byte[] getBody() {
         return body;
     }
-
     public void setBody(byte[] _b) {
         body = _b;
     }
 
+    public void setHttpVersion(int major, int minor) {
+        httpVersionMajor = major;
+        httpVersionMinor = minor;
+    }
+    public String getHttpVersion() {
+        return httpVersionMajor+"."+httpVersionMinor;
+    }
+
+    public void setStatusCode(int code){statusCode=code;}
+    public int getStatusCode(){return statusCode;}
     private String getStatusString(int status) {
 
         //TODO return correct strings

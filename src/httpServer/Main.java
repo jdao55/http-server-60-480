@@ -4,7 +4,6 @@ package httpServer;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -79,12 +78,12 @@ public class Main {
         try {
             byte [] body = FileUtil.readFileBytes(req.getURL());
             HTTPResponse resp = new HTTPResponse(body, 200);
-            soc.getOutputStream().write(resp.getHeaderBytes());
+            soc.getOutputStream().write(resp.getReponseBytes());
         }
         catch (FileNotFoundException e)
         {
             HTTPResponse resp = new HTTPResponse("<h>404 Not Found</h>".getBytes(), 404);
-            soc.getOutputStream().write(resp.getHeaderBytes());
+            soc.getOutputStream().write(resp.getReponseBytes());
         }
 
     }
