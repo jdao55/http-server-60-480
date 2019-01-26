@@ -39,11 +39,21 @@ public class Main {
                 while (input.length() > 0) {
 
                     String[] tokens = input.split(":", 2);
-                    header.put(tokens[0], tokens[1]);
+                    header.put(tokens[0].trim(), tokens[1].trim());
+
                     input = inStream.readLine();
                 }
-
-                HTTPRequest request = new HTTPRequest(info, header);
+                String reqBody="";
+                int bodySize=0;
+                if (header.containsKey("Content-Length")
+                        &&((bodySize= Integer.parseInt(header.get("Content-Length")))>0))                {
+                    if (bodySize>0){
+                        char[] buffer= new char[bodySize];
+                        inStream.read(buffer,0,bodySize);
+                        reqBody=new String(buffer);
+                    }
+                }
+                HTTPRequest request = new HTTPRequest(info, header, reqBody);
 
                 //process request
                 handleRequest(request, socket);
@@ -54,7 +64,7 @@ public class Main {
         }
         catch (Exception e)
         {
-            System.out.println(e.getMessage());
+            System.out.println(e.toString());
         }
    
 
@@ -68,6 +78,8 @@ public class Main {
                 case "GET":
                     handleGet(req, soc);
                     break;
+                case "POST":
+                    handlePost(req, soc);
             }
         }
         catch (IOException e)
@@ -91,6 +103,11 @@ public class Main {
             HTTPResponse resp = new HTTPResponse("<h>404 Not Found</h>".getBytes(), 404);
             soc.getOutputStream().write(resp.getReponseBytes());
         }
+
+    }
+
+    private static void handlePost(HTTPRequest req, Socket soc)
+    {
 
     }
 
