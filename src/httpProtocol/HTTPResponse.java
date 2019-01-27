@@ -1,4 +1,4 @@
-package httpUtil;
+package httpProtocol;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -77,7 +77,9 @@ public class HTTPResponse {
             case 200:
                 return "OK";
             case 404:
-                return "NOT FOUND";
+                return "Not Found";
+            case  500:
+                return "Internal Server Error";
         }
         return "";
     }

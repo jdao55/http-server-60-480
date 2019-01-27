@@ -7,7 +7,7 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
-import httpUtil.*;
+import httpProtocol.*;
 import util.*;
 
 public class Main {
@@ -92,9 +92,19 @@ public class Main {
         try {
             //redirect '/' to '/index.html'
             String url;
+            byte [] body;
             if ((url=req.getURL()).equals("/"))
                 url="/index.html";
-            byte [] body = FileUtil.readFileBytes(url);
+            //execute .out file
+            if(url.matches(".*\\.out$"))
+            {
+                body = util.FileUtil.excecuteProgram(url, req.getQuery());
+            }
+            //load load
+            else {
+                body = FileUtil.readFileBytes(url);
+            }
+            //send response
             HTTPResponse resp = new HTTPResponse(body, 200);
             soc.getOutputStream().write(resp.getReponseBytes());
         }
@@ -103,12 +113,42 @@ public class Main {
             HTTPResponse resp = new HTTPResponse("<h>404 Not Found</h>".getBytes(), 404);
             soc.getOutputStream().write(resp.getReponseBytes());
         }
+        catch (Exception e)
+        {
+            HTTPResponse resp = new HTTPResponse("<h>Server Error</h>".getBytes(), 500);
+            soc.getOutputStream().write(resp.getReponseBytes());
+        }
 
     }
 
-    private static void handlePost(HTTPRequest req, Socket soc)
+    private static void handlePost(HTTPRequest req, Socket soc) throws IOException
     {
-
+        try {
+            //redirect '/' to '/index.html'
+            String uri=req.getURL();
+            byte [] body;
+            if(uri.matches(".*\\.out$"))
+            {
+                body = util.FileUtil.excecuteProgram(uri, req.getBody());
+            }
+            //load load
+            else {
+                body = FileUtil.readFileBytes(uri);
+            }
+            //send response
+            HTTPResponse resp = new HTTPResponse(body, 200);
+            soc.getOutputStream().write(resp.getReponseBytes());
+        }
+        catch (FileNotFoundException e)
+        {
+            HTTPResponse resp = new HTTPResponse("<h>404 Not Found</h>".getBytes(), 404);
+            soc.getOutputStream().write(resp.getReponseBytes());
+        }
+        catch (Exception e)
+        {
+            HTTPResponse resp = new HTTPResponse("<h>Server Error</h>".getBytes(), 500);
+            soc.getOutputStream().write(resp.getReponseBytes());
+        }
     }
 
     private static void parseCliArgs(String[] args) throws Exception
