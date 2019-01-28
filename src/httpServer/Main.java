@@ -104,7 +104,7 @@ public class Main {
             if ((url=req.getURL()).equals("/"))
                 url="/index.html";
             //execute .out file
-            if(url.matches(".*\\.out$"))
+            if(url.matches(".*\\.exe$"))
             {
                 body = util.FileUtil.excecuteProgram(url, req.getQuery());
             }
@@ -114,6 +114,7 @@ public class Main {
             }
             //send response
             HTTPResponse resp = new HTTPResponse(body, 200);
+            resp.addHeader("Content-Type", "charset=utf-8");
             soc.getOutputStream().write(resp.getReponseBytes());
         }
         catch (FileNotFoundException e)
