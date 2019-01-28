@@ -36,12 +36,15 @@ public class Main {
                 info = inStream.readLine();
                 input = inStream.readLine();
                 System.out.println(info);
-                while (input.length() > 0) {
+                if (input != null && input.length()>0) {
+                    while (input.length() > 0) {
+                        if (input != null && input.length()>0) {
+                            String[] tokens = input.split(":", 2);
+                            header.put(tokens[0].trim(), tokens[1].trim());
 
-                    String[] tokens = input.split(":", 2);
-                    header.put(tokens[0].trim(), tokens[1].trim());
-
-                    input = inStream.readLine();
+                            input = inStream.readLine();
+                        }
+                    }
                 }
                 String reqBody="";
                 int bodySize=0;
@@ -52,6 +55,11 @@ public class Main {
                         inStream.read(buffer,0,bodySize);
                         reqBody=new String(buffer);
                     }
+                }
+                if (info == null){
+                    inStream.close();
+                    socket.close();
+                    continue;
                 }
                 HTTPRequest request = new HTTPRequest(info, header, reqBody);
 
@@ -64,7 +72,7 @@ public class Main {
         }
         catch (Exception e)
         {
-            System.out.println(e.toString());
+            e.printStackTrace();
         }
    
 
@@ -127,7 +135,7 @@ public class Main {
             //redirect '/' to '/index.html'
             String uri=req.getURL();
             byte [] body;
-            if(uri.matches(".*\\.out$"))
+            if(uri.matches(".*\\.exe$"))
             {
                 body = util.FileUtil.excecuteProgram(uri, req.getBody());
             }
