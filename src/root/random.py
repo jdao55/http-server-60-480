@@ -7,7 +7,7 @@ htmlpage = '<!DOCTYPE html>\n\
 <head>\n\
 </head>\n\
 <body>\n\
-<h1>Ramdom num gen</h1>\n\
+<h1>Random number generator</h1>\n\
 <form style="padding-left: 30px; display: block; box-sizing: border-box;">\n\
 <div>\n\
 <label>\n\
