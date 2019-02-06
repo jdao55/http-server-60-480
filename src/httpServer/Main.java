@@ -104,9 +104,15 @@ public class Main {
             if ((url=req.getURL()).equals("/"))
                 url="/index.html";
             //execute .out file
-            if(url.matches(".*\\.exe$"))
+            if(url.matches(".*\\.exe$") )
             {
-                body = util.FileUtil.excecuteProgram(url, req.getQuery());
+                String qu=req.getQuery()==null?" ":req.getQuery();
+                body = util.FileUtil.excecuteProgram(url, qu, qu);
+            }
+            if(url.matches(".*\\.py$"))
+            {
+                String qu=req.getQuery()==null?" ":req.getQuery();
+                body = util.FileUtil.excecutePyProgram(url, qu, qu);
             }
             //load load
             else {
@@ -136,9 +142,13 @@ public class Main {
             //redirect '/' to '/index.html'
             String uri=req.getURL();
             byte [] body;
-            if(uri.matches(".*\\.exe$"))
+            if(uri.matches(".*\\.exe$") || uri.matches(".*\\.py$"))
             {
-                body = util.FileUtil.excecuteProgram(uri, req.getBody());
+                body = util.FileUtil.excecuteProgram(uri, req.getBody(), req.getBody());
+            }
+            if(uri.matches(".*\\.py$"))
+            {
+                body = util.FileUtil.excecutePyProgram(uri, req.getBody(), req.getBody());
             }
             //load load
             else {
