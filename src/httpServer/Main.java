@@ -14,7 +14,7 @@ public class Main {
     private static ServerSocket server;
     private static int port= 8081;
 
-    //TODO add site rootPath, and port number as commandline args
+
     public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
 
         FileUtil.rootPath=System.getProperty("user.dir");
@@ -34,8 +34,13 @@ public class Main {
 
                 //read Request
                 info = inStream.readLine();
-                input = inStream.readLine();
+                if (info == null){
+                    inStream.close();
+                    socket.close();
+                    continue;
+                }
                 System.out.println(info);
+                input = inStream.readLine();
                 if (input != null && input.length()>0) {
                     while (input.length() > 0) {
                         if (input != null && input.length()>0) {
@@ -56,13 +61,8 @@ public class Main {
                         reqBody=new String(buffer);
                     }
                 }
-                if (info == null){
-                    inStream.close();
-                    socket.close();
-                    continue;
-                }
-                HTTPRequest request = new HTTPRequest(info, header, reqBody);
 
+                HTTPRequest request = new HTTPRequest(info, header, reqBody);
                 //process request
                 handleRequest(request, socket);
 
@@ -104,24 +104,26 @@ public class Main {
             if ((url=req.getURL()).equals("/"))
                 url="/index.html";
             //execute .out file
-            if(url.matches(".*\\.exe$") )
+            if(url.matches(".*\\.c$") )
             {
-                String qu=req.getQuery()==null?" ":req.getQuery();
-                body = util.FileUtil.excecuteProgram(url, qu, qu);
+                body = util.FileUtil.excecuteCProgram(url,"",req.toString());
+                soc.getOutputStream().write(body);
             }
-            if(url.matches(".*\\.py$"))
+            else if(url.matches(".*\\.py$"))
             {
-                String qu=req.getQuery()==null?" ":req.getQuery();
-                body = util.FileUtil.excecutePyProgram(url, qu, qu);
+                body = util.FileUtil.excecutePyProgram(url, "",req.toString());
+                soc.getOutputStream().write(body);
             }
-            //load load
+            //load
             else {
                 body = FileUtil.readFileBytes(url);
+                //send response
+                HTTPResponse resp = new HTTPResponse(body, 200);
+                resp.addHeader("Content-Type", "charset=utf-8");
+                System.out.print(new String(resp.getReponseBytes()));
+                soc.getOutputStream().write(resp.getReponseBytes());
             }
-            //send response
-            HTTPResponse resp = new HTTPResponse(body, 200);
-            resp.addHeader("Content-Type", "charset=utf-8");
-            soc.getOutputStream().write(resp.getReponseBytes());
+
         }
         catch (FileNotFoundException e)
         {
@@ -142,21 +144,24 @@ public class Main {
             //redirect '/' to '/index.html'
             String uri=req.getURL();
             byte [] body;
-            if(uri.matches(".*\\.exe$") || uri.matches(".*\\.py$"))
+            if(uri.matches(".*\\.c$"))
             {
-                body = util.FileUtil.excecuteProgram(uri, req.getBody(), req.getBody());
+                body = util.FileUtil.excecuteCProgram(uri, "", req.toString());
+                soc.getOutputStream().write(body);
             }
-            if(uri.matches(".*\\.py$"))
+            else if(uri.matches(".*\\.py$"))
             {
-                body = util.FileUtil.excecutePyProgram(uri, req.getBody(), req.getBody());
+                body = util.FileUtil.excecutePyProgram(uri, "", req.toString());
+                soc.getOutputStream().write(body);
             }
             //load load
             else {
                 body = FileUtil.readFileBytes(uri);
+                //send response
+                HTTPResponse resp = new HTTPResponse(body, 200);
+                soc.getOutputStream().write(resp.getReponseBytes());
             }
-            //send response
-            HTTPResponse resp = new HTTPResponse(body, 200);
-            soc.getOutputStream().write(resp.getReponseBytes());
+
         }
         catch (FileNotFoundException e)
         {
