@@ -5,12 +5,14 @@ import java.util.Map;
 public class HTTPRequest {
 	private String method;
 	private String URL;
+	private String methodLine;
 	private String query;
 	private String protocol;
 	private Map<String,String> header;
 	private String body;
 	
 	public HTTPRequest(String info,Map<String,String> header, String _body) {
+		methodLine=info;
 		String[] tokens = info.split("\\s+");
 		method = tokens[0];
 		String [] urlParts= tokens[1].split("\\?");
@@ -44,5 +46,17 @@ public class HTTPRequest {
 	
 	public Map<String,String> getHeader() {
 		return header;
+	}
+	public String toString()
+	{
+		String ret=methodLine+"\r\n";
+		for (Map.Entry<String, String> entry : header.entrySet()) {
+			String key = entry.getKey();
+			String value = entry.getValue();
+			ret += key + ": " + value + "\r\n";
+		}
+		ret+="\r\n";
+		ret+=body;
+		return ret;
 	}
 }

@@ -3,20 +3,27 @@
 <html>
 	<head>
 		<style>
-			label {
-				margin-right: 100px;
-			}
+		 label {
+			 margin-right: 100px;
+		 }
 		</style>
 	</head>
 	<body>
 		<h1>Instructor Page</h1>
 
-		<form action="/submit_grade.exe" method="post">
+		<form action="/submit_grade.exe">
 			<div>
 				<label>Student_Name</label>
 
 				<label>Homework_Name</label>
-
+	            <label>
+					First Name:
+					<input type="text" name="fname" size="32">
+				</label>
+				<label>
+					Last Name:
+					<input type="text" name="lname" size="32">
+				</label>
 				<label>
 					Grade:
 					<input type="text" name="grade" size="1">
