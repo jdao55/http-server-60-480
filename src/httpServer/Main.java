@@ -41,16 +41,14 @@ public class Main {
                 }
                 System.out.println(info);
                 input = inStream.readLine();
-                if (input != null && input.length()>0) {
-                    while (input.length() > 0) {
-                        if (input != null && input.length()>0) {
-                            String[] tokens = input.split(":", 2);
-                            header.put(tokens[0].trim(), tokens[1].trim());
-
-                            input = inStream.readLine();
-                        }
+                while (input.length() > 0) {
+                    if (input != null && input.length()>0) {
+                        String[] tokens = input.split(":", 2);
+                        header.put(tokens[0].trim(), tokens[1].trim());
+                        input = inStream.readLine();
                     }
                 }
+
                 String reqBody="";
                 int bodySize=0;
                 if (header.containsKey("Content-Length")
@@ -64,7 +62,7 @@ public class Main {
 
                 HTTPRequest request = new HTTPRequest(info, header, reqBody);
                 //process request
-                handleRequest(request, socket);
+                RequestHandler.handleRequest(request, socket);
 
                 inStream.close();
                 socket.close();
@@ -73,105 +71,6 @@ public class Main {
         catch (Exception e)
         {
             e.printStackTrace();
-        }
-   
-
-
-    }
-
-    //handle incomming requests
-    private static void handleRequest(HTTPRequest req, Socket soc) {
-        try {
-            switch (req.getMethod()) {
-                case "GET":
-                    handleGet(req, soc);
-                    break;
-                case "POST":
-                    handlePost(req, soc);
-            }
-        }
-        catch (IOException e)
-        {}
-    }
-
-    //handle get request
-    private static void handleGet(HTTPRequest req, Socket soc) throws IOException
-    {
-        try {
-            //redirect '/' to '/index.html'
-            String url;
-            byte [] body;
-            if ((url=req.getURL()).equals("/"))
-                url="/index.html";
-            //execute .out file
-            if(url.matches(".*\\.c$") )
-            {
-                body = util.FileUtil.excecuteCProgram(url,"",req.toString());
-                soc.getOutputStream().write(body);
-            }
-            else if(url.matches(".*\\.py$"))
-            {
-                body = util.FileUtil.excecutePyProgram(url, "",req.toString());
-                soc.getOutputStream().write(body);
-            }
-            //load
-            else {
-                body = FileUtil.readFileBytes(url);
-                //send response
-                HTTPResponse resp = new HTTPResponse(body, 200);
-                resp.addHeader("Content-Type", "charset=utf-8");
-                System.out.print(new String(resp.getReponseBytes()));
-                soc.getOutputStream().write(resp.getReponseBytes());
-            }
-
-        }
-        catch (FileNotFoundException e)
-        {
-            HTTPResponse resp = new HTTPResponse("<h>404 Not Found</h>".getBytes(), 404);
-            soc.getOutputStream().write(resp.getReponseBytes());
-        }
-        catch (Exception e)
-        {
-            HTTPResponse resp = new HTTPResponse("<h>Server Error</h>".getBytes(), 500);
-            soc.getOutputStream().write(resp.getReponseBytes());
-        }
-
-    }
-
-    private static void handlePost(HTTPRequest req, Socket soc) throws IOException
-    {
-        try {
-            //redirect '/' to '/index.html'
-            String uri=req.getURL();
-            byte [] body;
-            if(uri.matches(".*\\.c$"))
-            {
-                body = util.FileUtil.excecuteCProgram(uri, "", req.toString());
-                soc.getOutputStream().write(body);
-            }
-            else if(uri.matches(".*\\.py$"))
-            {
-                body = util.FileUtil.excecutePyProgram(uri, "", req.toString());
-                soc.getOutputStream().write(body);
-            }
-            //load load
-            else {
-                body = FileUtil.readFileBytes(uri);
-                //send response
-                HTTPResponse resp = new HTTPResponse(body, 200);
-                soc.getOutputStream().write(resp.getReponseBytes());
-            }
-
-        }
-        catch (FileNotFoundException e)
-        {
-            HTTPResponse resp = new HTTPResponse("<h>404 Not Found</h>".getBytes(), 404);
-            soc.getOutputStream().write(resp.getReponseBytes());
-        }
-        catch (Exception e)
-        {
-            HTTPResponse resp = new HTTPResponse("<h>Server Error</h>".getBytes(), 500);
-            soc.getOutputStream().write(resp.getReponseBytes());
         }
     }
 

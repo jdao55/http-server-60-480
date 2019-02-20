@@ -34,11 +34,16 @@ public class FileUtil {
             throw new FileNotFoundException();
         path =path.charAt(0)=='/'?"."+path:path;
         Process p = Runtime.getRuntime().exec("gcc -O2 " +path, null, new File(rootPath));
+        p.waitFor();
         return excecuteProgram("./a.out", "", input);
      }
 
 
     public static byte[] excecuteProgram(String program, String args, String input) throws Exception {
+        Path rootp = Paths.get(rootPath, program);
+        if (!rootp.toFile().exists())
+            throw new FileNotFoundException();
+        program = rootp.toFile().getAbsolutePath();
 
         Process p = Runtime.getRuntime().exec(program +" " +args, null, new File(rootPath));
 
@@ -47,7 +52,7 @@ public class FileUtil {
         outStream.close();
 
         InputStream is = p.getInputStream();
-        byte[] byteArr = new byte[100000];
+        byte[] byteArr = new byte[500000];
 
         int size =is.read(byteArr);
         is.close();
@@ -68,7 +73,7 @@ public class FileUtil {
         outStream.close();
 
         InputStream is = p.getInputStream();
-        byte[] byteArr = new byte[100000];
+        byte[] byteArr = new byte[500000];
         int size =is.read(byteArr);
         is.close();
 
