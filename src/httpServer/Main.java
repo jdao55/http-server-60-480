@@ -17,7 +17,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
 
-        FileUtil.rootPath=System.getProperty("user.dir");
+        FileUtil.rootPath = System.getProperty("user.dir");
 
         try {
             parseCliArgs(args);
@@ -34,7 +34,7 @@ public class Main {
 
                 //read Request
                 info = inStream.readLine();
-                if (info == null){
+                if (info == null) {
                     inStream.close();
                     socket.close();
                     continue;
@@ -42,21 +42,21 @@ public class Main {
                 System.out.println(info);
                 input = inStream.readLine();
                 while (input.length() > 0) {
-                    if (input != null && input.length()>0) {
+                    if (input != null && input.length() > 0) {
                         String[] tokens = input.split(":", 2);
                         header.put(tokens[0].trim(), tokens[1].trim());
                         input = inStream.readLine();
                     }
                 }
 
-                String reqBody="";
-                int bodySize=0;
+                String reqBody = "";
+                int bodySize = 0;
                 if (header.containsKey("Content-Length")
-                        &&((bodySize= Integer.parseInt(header.get("Content-Length")))>0))                {
-                    if (bodySize>0){
-                        char[] buffer= new char[bodySize];
-                        inStream.read(buffer,0,bodySize);
-                        reqBody=new String(buffer);
+                        && ((bodySize = Integer.parseInt(header.get("Content-Length"))) > 0)) {
+                    if (bodySize > 0) {
+                        char[] buffer = new char[bodySize];
+                        inStream.read(buffer, 0, bodySize);
+                        reqBody = new String(buffer);
                     }
                 }
 
@@ -67,13 +67,10 @@ public class Main {
                 inStream.close();
                 socket.close();
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
     private static void parseCliArgs(String[] args) throws Exception
     {
         for(int i=0;i< args.length;i++)
