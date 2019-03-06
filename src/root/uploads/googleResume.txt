@@ -1,0 +1,29 @@
+;; This buffer is for text that is not saved, and for Lisp evaluation.
+;; To create a file, visit it with <open> and enter text in its buffer.
+
+resume
+1page . 10years
+
+Order
+education
+work
+projects
+activities
+honors awards
+
+obejctive is okay
+consise
+interest
+
+cover letter optional
+
+Education section
+Put GPA / put transcript / major gpa
+
+work experience
+bullet points - acomplish x
+
+projects
+-pretty much mandatory
+g.co/techdevguide g.co/buildyourfuture g.co/virtualcareerfair
+

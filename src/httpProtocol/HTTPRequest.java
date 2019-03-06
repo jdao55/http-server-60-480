@@ -59,4 +59,20 @@ public class HTTPRequest {
 		ret+=body;
 		return ret;
 	}
+	//get boudary for mulitparts form data
+	public String getContentBoundary()
+	{
+		String ctype =header.get("Content-Type");
+		if (ctype==null)
+			return "";
+		String[] splitsemi = ctype.split(";");
+		for (String a: splitsemi)
+		{
+			if (a.contains("boundary"))
+			{
+				return a.split("=")[1];
+			}
+		}
+		return "";
+	}
 }

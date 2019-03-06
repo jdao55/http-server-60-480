@@ -44,7 +44,10 @@ public class FileUtil {
         if (!rootp.toFile().exists())
             throw new FileNotFoundException();
         program = rootp.toFile().getAbsolutePath();
-
+        if(!rootp.toFile().canExecute())
+        {
+            throw new FileNotFoundException("File is not execuatable");
+        }
         Process p = Runtime.getRuntime().exec(program +" " +args, null, new File(rootPath));
 
         OutputStream outStream = p.getOutputStream();
@@ -56,9 +59,9 @@ public class FileUtil {
 
         int size =is.read(byteArr);
         is.close();
+
         //resize byte array
         byte[] retarr= Arrays.copyOfRange(byteArr,0,size);
-        String a= new String(retarr, StandardCharsets.UTF_16);
 
         return retarr;
     }
@@ -82,5 +85,13 @@ public class FileUtil {
         return retarr;
     }
 
+    public static void writeTempFile(String filename, String content) throws Exception
+    {
+        Path rootp = Paths.get(rootPath, "temp/"+filename);
+        String p = rootp.toString();
+        DataOutputStream os = new DataOutputStream(new FileOutputStream(rootp.toString()));
+        os.write(content.getBytes());
+        os.close();
+    }
 
 }
