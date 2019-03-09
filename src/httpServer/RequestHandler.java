@@ -79,7 +79,7 @@ public class RequestHandler {
     {
         String bound=req.getContentBoundary();
         String body=new String(req.getBody(), StandardCharsets.ISO_8859_1);
-        String[] form= body.split("-*"+bound+"-*");
+        String[] form= body.split("--"+bound);
         String files="";
         for(String s: form)
         {
@@ -97,11 +97,14 @@ public class RequestHandler {
     }
 
     private static String uploadfile(String form_part) throws Exception{
-        String[] list= form_part.split("\r\n\r\n");
-        if(list.length<2)
+        int bodySplit=form_part.indexOf("\r\n\r\n");
+        if(bodySplit<0 || bodySplit==form_part.length())
             return null;
-        String filename =getFilename(list[0]);
-        String body=list[1].substring(0,list[1].length()-2);
+        String header=form_part.substring(0,bodySplit);
+        String body= form_part.substring(bodySplit+4);
+
+        String filename =getFilename(header);
+        body=body.substring(0,body.length()-2);
         byte[] body_bytes= body.getBytes(StandardCharsets.ISO_8859_1);
         FileUtil.writeTempFile(filename, body_bytes);
         return filename;
