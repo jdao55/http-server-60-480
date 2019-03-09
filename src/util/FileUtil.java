@@ -12,7 +12,7 @@ public class FileUtil {
     //edit rootPath to change root path of site
     public static String rootPath = "";
 
-    public static String readFile(String path, Charset encoding) throws IOException, FileNotFoundException {
+    public static String readFile(String path, Charset encoding) throws IOException {
         Path p = Paths.get(rootPath, path);
         if (!p.toFile().exists())
             throw new FileNotFoundException();
@@ -21,7 +21,7 @@ public class FileUtil {
         return new String(encoded, encoding);
     }
 
-    public static byte[] readFileBytes(String path) throws IOException, FileNotFoundException {
+    public static byte[] readFileBytes(String path) throws IOException {
         Path p = Paths.get(rootPath, path);
         if (!p.toFile().exists())
             throw new FileNotFoundException();
@@ -85,13 +85,12 @@ public class FileUtil {
         return retarr;
     }
 
-    public static void writeTempFile(String filename, String content) throws Exception
+    public static void writeTempFile(String filename, byte[] content) throws Exception
     {
         Path rootp = Paths.get(rootPath, "temp/"+filename);
         String p = rootp.toString();
         DataOutputStream os = new DataOutputStream(new FileOutputStream(rootp.toString()));
-        os.write(content.getBytes());
+        os.write(content);
         os.close();
     }
-
 }

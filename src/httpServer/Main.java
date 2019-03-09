@@ -27,44 +27,60 @@ public class Main {
             while (true) {
                 Socket socket = server.accept();
 
-                BufferedReader inStream = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                InputStream is=socket.getInputStream();
+                String headerString=readHeader(is);
+                BufferedReader header_stream = new BufferedReader(new StringReader(headerString));
 
                 String input, info;
                 Map<String, String> header = new HashMap<String, String>();
 
                 //read Request
-                info = inStream.readLine();
+                info = header_stream.readLine();
                 if (info == null) {
-                    inStream.close();
+                    header_stream.close();
                     socket.close();
                     continue;
                 }
                 System.out.println(info);
-                input = inStream.readLine();
+                input = header_stream.readLine();
                 while (input.length() > 0) {
                     if (input != null && input.length() > 0) {
                         String[] tokens = input.split(":", 2);
                         header.put(tokens[0].trim(), tokens[1].trim());
-                        input = inStream.readLine();
+                        input = header_stream.readLine();
                     }
                 }
-
-                String reqBody = "";
+                header_stream.close();
+                byte[] reqBody = null;
                 int bodySize = 0;
                 if (header.containsKey("Content-Length")
                         && ((bodySize = Integer.parseInt(header.get("Content-Length"))) > 0)) {
-                    if (bodySize > 0) {
-                        char[] buffer = new char[bodySize];
-                        inStream.read(buffer, 0, bodySize);
-                        reqBody = new String(buffer);
-                    }
+                        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+
+                        int nRead;
+                        int read_count=0;
+                        byte[] data = new byte[90384];
+                        nRead = is.read(data,  0, data.length);
+                        buffer.write(data, 0, nRead);
+                        read_count+=nRead;
+                        while (read_count<bodySize) {
+                            nRead = is.read(data,  0, data.length);
+                            buffer.write(data, 0, nRead);
+                            read_count+=nRead;
+                        }
+                        reqBody= buffer.toByteArray();
+
                 }
 
+                //
+                // FileUtil.writeTempFile("test", reqBody);
                 HTTPRequest request = new HTTPRequest(info, header, reqBody);
                 //process request
                 RequestHandler.handleRequest(request, socket);
 
-                inStream.close();
+
+
+                is.close();
                 socket.close();
             }
         } catch (Exception e) {
@@ -72,7 +88,7 @@ public class Main {
         }
     }
     private static void parseCliArgs(String[] args) throws Exception
-    {
+        {
         for(int i=0;i< args.length;i++)
         {
             if (args[i].matches("(-d)|(-dir)"))
@@ -90,4 +106,22 @@ public class Main {
 
         }
     }
+
+    private static String readHeader(InputStream is) throws Exception{
+        StringBuilder header = new StringBuilder();
+        header.append((char)is.read());
+        header.append((char)is.read());
+        header.append((char)is.read());
+        header.append((char)is.read());
+        while(isHeader(header)){
+            header.append((char)is.read());
+        }
+        return header.toString();
+
+    }
+    private static boolean isHeader( StringBuilder h)
+    {
+        String last4chars=h.toString().substring(h.length()-4);
+        return !(last4chars.equals("\r\n\r\n"));}
+
 }

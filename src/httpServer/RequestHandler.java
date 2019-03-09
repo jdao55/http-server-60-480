@@ -1,12 +1,14 @@
 package httpServer;
 import java.io.*;
-import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+
 import httpProtocol.*;
 import util.*;
+
+import javax.xml.stream.events.StartDocument;
+
 public class RequestHandler {
     //handle incoming requests
     public static void handleRequest(HTTPRequest req, Socket soc) throws Exception {
@@ -76,7 +78,7 @@ public class RequestHandler {
     private static void handleUpload(HTTPRequest req, Socket soc) throws Exception
     {
         String bound=req.getContentBoundary();
-        String body=req.getBody();
+        String body=new String(req.getBody(), StandardCharsets.ISO_8859_1);
         String[] form= body.split("-*"+bound+"-*");
         String files="";
         for(String s: form)
@@ -99,7 +101,9 @@ public class RequestHandler {
         if(list.length<2)
             return null;
         String filename =getFilename(list[0]);
-        FileUtil.writeTempFile(filename, list[1]);
+        String body=list[1].substring(0,list[1].length()-2);
+        byte[] body_bytes= body.getBytes(StandardCharsets.ISO_8859_1);
+        FileUtil.writeTempFile(filename, body_bytes);
         return filename;
     }
 

@@ -1,22 +1,17 @@
 #!/bin/python3
-import sys
-from os import listdir
-from os.path import isfile, join
-from os import remove
+import shutil
+import os
 
-path = sys.stdin.read()
-path = path.rstrip(" \n")
-#path = path.replace("\"","")
-files = [f for f in listdir(path) if isfile(join(path, f))]
 
-for file in files:
-    openfile = open(path+"/"+file,"r")
-    newfile = open("./uploads/"+file,"w+")
-    for line in openfile:
-        newfile.write(line)
-    openfile.close()
-    newfile.close()
-    remove(path+"/"+file)
+dest1 = 'uploads/'
+
+source = input()
+source = source.rstrip(" \n")
+files = os.listdir(source)
+
+for f in files:
+        shutil.move(source+f, dest1)
+
 
 print("<!DOCTYPE html>\
 <html>\

@@ -1,5 +1,8 @@
 package httpProtocol;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 public class HTTPRequest {
@@ -9,9 +12,9 @@ public class HTTPRequest {
 	private String query;
 	private String protocol;
 	private Map<String,String> header;
-	private String body;
+	private byte[] body;
 	
-	public HTTPRequest(String info,Map<String,String> header, String _body) {
+	public HTTPRequest(String info,Map<String,String> header, byte[] _body) {
 		methodLine=info;
 		String[] tokens = info.split("\\s+");
 		method = tokens[0];
@@ -42,12 +45,32 @@ public class HTTPRequest {
 		return protocol;
 	}
 
-	public String getBody(){return body;}
-	
+	public byte[] getBody(){return body;}
+
+	public String getBodyString(Charset encoding)   {
+		if  (body!=null) {
+			return new String(body, encoding);
+		}
+		else return "";
+	}
+
 	public Map<String,String> getHeader() {
 		return header;
 	}
-	public String toString()
+
+	public String toString() {
+		String ret=methodLine+"\r\n";
+		for (Map.Entry<String, String> entry : header.entrySet()) {
+			String key = entry.getKey();
+			String value = entry.getValue();
+			ret += key + ": " + value + "\r\n";
+		}
+		ret+="\r\n";
+		ret+=getBodyString(StandardCharsets.UTF_8);
+		return ret;
+	}
+
+	public byte[] toBytes()
 	{
 		String ret=methodLine+"\r\n";
 		for (Map.Entry<String, String> entry : header.entrySet()) {
@@ -56,10 +79,16 @@ public class HTTPRequest {
 			ret += key + ": " + value + "\r\n";
 		}
 		ret+="\r\n";
-		ret+=body;
-		return ret;
+		byte[] head=ret.getBytes();
+		if(body!=null) {
+			byte[] res = new byte[ret.length() + body.length];
+			System.arraycopy(head, 0, res, 0, head.length);
+			System.arraycopy(body, 0, res, head.length, body.length);
+			return res;
+		}
+		else return head;
 	}
-	//get boudary for mulitparts form data
+	//get boundary for mulitparts form data
 	public String getContentBoundary()
 	{
 		String ctype =header.get("Content-Type");
