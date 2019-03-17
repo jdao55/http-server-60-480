@@ -56,6 +56,10 @@ public class HTTPRequest {
 		return header;
 	}
 
+	public String getHeader(String k) {
+		return header.get(k);
+	}
+
 	public String toString() {
 		String ret=methodLine+"\r\n";
 		for (Map.Entry<String, String> entry : header.entrySet()) {

@@ -3,6 +3,7 @@ import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Random;
 
 import httpProtocol.*;
 import util.*;
@@ -39,6 +40,12 @@ public class RequestHandler {
         try {
             body = util.FileUtil.excecuteProgram("dynamic" + url, "", req.toString());
             HTTPResponse resp = new HTTPResponse(body, 200);
+            if(req.getHeader("Cookie")==null)
+            {
+                Random r = new Random();
+                Integer a=r.nextInt((1000 - 1) + 1) + 1;
+                resp.addHeader("Set-Cookie", a.toString());
+            }
             soc.getOutputStream().write(resp.getReponseBytes());
         } catch (FileNotFoundException e) {
             return false;
@@ -59,6 +66,12 @@ public class RequestHandler {
             body = FileUtil.readFileBytes(url);
             //send response
             HTTPResponse resp = new HTTPResponse(body, 200);
+            if(req.getHeader("Cookie")==null)
+            {
+                Random r = new Random();
+                Integer a=r.nextInt((1000 - 1) + 1) + 1;
+                resp.addHeader("Set-Cookie", a.toString());
+            }
             soc.getOutputStream().write(resp.getReponseBytes());
             return true;
         }
@@ -92,6 +105,12 @@ public class RequestHandler {
 
         byte[] retbody =FileUtil.excecuteProgram("dynamic/upload.py","", "temp/");
         HTTPResponse resp = new HTTPResponse(retbody, 200);
+        if(req.getHeader("Cookie")==null)
+        {
+            Random r = new Random();
+             Integer a=r.nextInt((1000 - 1) + 1) + 1;
+             resp.addHeader("Set-Cookie", a.toString());
+        }
         soc.getOutputStream().write(resp.getReponseBytes());
 
     }
@@ -127,4 +146,5 @@ public class RequestHandler {
         return null;
 
     }
+
 }
