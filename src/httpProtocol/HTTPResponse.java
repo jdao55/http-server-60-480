@@ -1,11 +1,7 @@
 package httpProtocol;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Locale;
-import java.util.TimeZone;
+import java.util.*;
 
 public class HTTPResponse {
     private int httpVersionMajor;
@@ -13,11 +9,13 @@ public class HTTPResponse {
     private int statusCode;
     private byte[] body;
     private HashMap<String, String> headerMap;
+    private ArrayList<String> setCookies;
 
     public HTTPResponse(byte[] _body, int _statusCode) {
         body = _body;
         httpVersionMajor = 1;
         httpVersionMinor = 1;
+        setCookies=new ArrayList<>();
         headerMap = new HashMap<String, String>();
         headerMap.put("Content-Length", Integer.toString(body.length));
         headerMap.put("Date", getServerTime());
@@ -78,7 +76,7 @@ public class HTTPResponse {
                 return "OK";
             case 404:
                 return "Not Found";
-            case  500:
+            case 500:
                 return "Internal Server Error";
         }
         return "";
@@ -92,4 +90,5 @@ public class HTTPResponse {
         dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
         return dateFormat.format(calendar.getTime());
     }
+
 }

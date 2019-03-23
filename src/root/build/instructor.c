@@ -12,6 +12,8 @@ int get_query( char * query);
 //parse query
 void parse_query(char * query);
 
+int getCookie();
+
 char *replaceWord(const char *s, const char *oldW, const char *newW);
 void  print_dynamic_content();
 
@@ -49,9 +51,20 @@ int main()
         parse_query(buff);
         write_grade();
     }
-    printf(html);
-    print_dynamic_content();
-    printf(html_end);
+    int cookie=getCookie();
+    if(cookie==14){
+        printf(html);
+        print_dynamic_content();
+        printf(html_end);
+    }
+    else{
+        printf("<!DOCTYPE html>\n\
+<html>\n\
+<head>\n\
+</head>\n\
+<body>Must be teacher to access\
+</body></html>");
+    }
 
 }
 
@@ -151,4 +164,18 @@ void print_dynamic_content()
         printf("<td><a href=\"/downloads/binary%d.out\" download>Binary</a></td>", i);
         printf("<td><input type=\"text\" name=\"%d\" value=\"%s\"></td></tr>", i, line1);
     }
+}
+
+int getCookie()
+{
+    char buff[500], key[500];
+    while(scanf("%s %s",buff, key)>0)
+    {
+        if(strcmp(buff,"Cookie:")==0)
+        {
+            return atoi(key+3);
+
+        }
+    }
+    return -1;
 }
