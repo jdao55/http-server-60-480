@@ -50,7 +50,7 @@ elif pswd[user][1] < 14:
     <h1>Welcome to the University of Windsor portal!</h1>\
     <img src="uwin_logo.jpg" alt="UWin Logo">\
         <br>\
-        <a href="computer_science.html">School of Computer Science</a>\
+        <a href="home.py">Home</a>\
         <br>\
         <a href="viewgrade.py">view grade</a>\
         <br>\
